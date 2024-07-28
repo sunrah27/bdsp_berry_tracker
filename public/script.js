@@ -82,19 +82,42 @@ function createBerrySelect(patchId, index, selectedBerry) {
     `;
 }
 
+// Flag to toggle between server and local storage
+const useServer = false; // Set to true to use server, false to use local storage
+
 function saveBerrySelection(patchId, index) {
     let berry = document.getElementById(`berry${patchId}_${index}`).value;
 
-    // Send data to the server
-    fetch('/plant', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: patchId, berries: [{ index, berry }] }),
-    }).then(response => response.json())
-      .then(data => {
-          console.log('Berry selection saved:', data);
-      })
-      .catch(error => console.error('Error saving berry selection:', error));
+    const data = { id: patchId, berries: [{ index, berry }] };
+
+    saveData(data)
+        .then(response => {
+            console.log('Berry selection saved:', response);
+        })
+        .catch(error => console.error('Error saving berry selection:', error));
+}
+
+function saveData(data) {
+    if (useServer) {
+        // Save data to the server
+        return fetch('/plant', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        }).then(response => response.json());
+    } else {
+        // Save data to local storage
+        return new Promise((resolve, reject) => {
+            try {
+                let patches = JSON.parse(localStorage.getItem('patches')) || {};
+                patches[data.id] = data.berries;
+                localStorage.setItem('patches', JSON.stringify(patches));
+                resolve(data);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
 }
   
 function updateMarkerPopup(marker, patch) {
