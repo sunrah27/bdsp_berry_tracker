@@ -1,0 +1,32 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+p {
+    margin: 5px 0 !important;
+}
+
+#wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+#map {
+    height: 734px;
+    width: 1268px;
+    text-align: center;
+}
+
+form.pinPopUp > div {
+    margin: 2.5px 0 !important;
+}
+
+.leaflet-popup-content {
+    margin: 10px;
+}
