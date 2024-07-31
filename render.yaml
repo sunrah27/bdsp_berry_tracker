@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: berry-tracker-app
+    env: node
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
