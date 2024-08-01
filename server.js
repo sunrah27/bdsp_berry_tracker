@@ -13,7 +13,12 @@ let patches = {};
 // Endpoint to plant berries
 app.post('/plant', (req, res) => {
     const { id, berries } = req.body;
-    patches[id] = { berries: berries, plantedAt: new Date() };
+    if (!patches[id]) {
+        patches[id] = { berries: [], plantedAt: new Date() };
+    }
+    berries.forEach(({ index, berry }) => {
+        patches[id].berries[index] = { id: berry, plantedAt: new Date() };
+    });
     res.sendStatus(200);
 });
 
@@ -24,5 +29,5 @@ app.get('/patch/:id', (req, res) => {
 });
 
 app.listen(3000, () => {
-    console.log('Server running on port 3000');
+    console.log('Server running on port 3000: http://localhost:3000/');
 });

@@ -10,10 +10,8 @@ const map = L.map('map', {
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
 // Load the map image
-const bounds = [[0, 0], [734, 1268]]; // Adjust based on your map image dimensions
+const bounds = [[0, 0], [734, 1268]]; // Adjust based on your map image dimensions [1101, 1902]
 const image = L.imageOverlay('map.png', bounds).addTo(map);
-
-map.fitBounds(bounds);
 
 // Set max bounds to prevent dragging beyond the image
 map.setMaxBounds(bounds);
@@ -48,13 +46,15 @@ const berryPatches = [
     { id: 12, name: 'Solaceon Town', description: 'Next to shop.', img: '12.jpg', coords: [290, 721], numPatches: 4 },
     { id: 13, name: 'Route 210', description: 'On the right, right outside Solaceon Town.', img: '13.jpg', coords: [310, 721], numPatches: 4 },
     { id: 14, name: 'Route 215', description: 'Halfway through the route, under a wooden bridge.', img: '14.jpg', coords: [325, 775], numPatches: 2 },
-    { id: 15, name: 'Route 215', description: 'On the right right outside Solaceon Town.', img: '15.jpg', coords: [325, 818], numPatches: 2 },
-    { id: 16, name: 'Route 214', description: 'On the right right outside Solaceon Town.', img: '16.jpg', coords: [270, 867], numPatches: 4 },
-    { id: 17, name: 'Route 213', description: 'On the right right outside Solaceon Town.', img: '17.jpg', coords: [130, 815], numPatches: 4 },
-    { id: 18, name: 'Pastoria City', description: 'On the right right outside Solaceon Town.', img: '18.jpg', coords: [130, 770], numPatches: 4 },
-    { id: 19, name: 'Route 212', description: 'On the right right outside Solaceon Town.', img: '19.jpg', coords: [110, 750], numPatches: 4 },
-    { id: 20, name: 'Route 212', description: 'On the right right outside Solaceon Town.', img: '19.jpg', coords: [185, 625], numPatches: 2 },
-    { id: 21, name: 'Route 212', description: 'On the right right outside Solaceon Town.', img: '20.jpg', coords: [165, 625], numPatches: 2 },
+    { id: 15, name: 'Route 215', description: '', img: '15.jpg', coords: [325, 818], numPatches: 2 },
+    { id: 16, name: 'Route 214', description: '', img: '16.jpg', coords: [270, 867], numPatches: 4 },
+    { id: 17, name: 'Route 213', description: '', img: '17.jpg', coords: [130, 815], numPatches: 4 },
+    { id: 18, name: 'Pastoria City', description: '', img: '18.jpg', coords: [130, 770], numPatches: 4 },
+    { id: 19, name: 'Route 212', description: '', img: '19.jpg', coords: [110, 750], numPatches: 4 },
+    { id: 20, name: 'Route 212', description: '', img: '20.jpg', coords: [185, 625], numPatches: 2 },
+    { id: 21, name: 'Route 212', description: '', img: '21.jpg', coords: [165, 625], numPatches: 2 },
+    { id: 22, name: 'Route 210', description: 'Right of Celestic Town.', img: '22.jpg', coords: [377, 650], numPatches: 4 },
+    { id: 23, name: 'Route 211', description: 'Left of Celestic Twon.', img: '23.jpg', coords: [377, 605], numPatches: 4 },
     // Add more patches with their coordinates and numPatches
 ];
 
@@ -151,42 +151,76 @@ function saveBerrySelection(patchId, index) {
         return;
     }
 
-    const data = { id: patchId, berries: [{ index, berry }] };
+    const data = { id: patchId, berries: [{ index, berry: parseInt(berry) }] }; // Ensure berry id is an integer
 
     saveData(data)
         .then(response => {
             console.log('Berry selection saved:', response);
+            console.log(data);
         })
         .catch(error => console.error('Error saving berry selection:', error));
 }
 
 function saveData(data) {
-    // Save data to the server
     return fetch('/plant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-    }).then(response => response.text()); // Changed from response.json() to response.text() to handle non-JSON responses
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text();
+    })
+    .then(text => {
+        console.log('Save successful:', text);
+        return text;
+    })
+    .catch(error => {
+        console.error('Error saving data:', error);
+    });
 }
 
 function updateMarkerPopup(marker, patch) {
-    fetch(`/patch/${patch.id}`)
-        .then(response => response.json())
-        .then(data => {
-            let berrySelects = '';
-            for (let i = 0; i < patch.numPatches; i++) {
-                berrySelects += createBerrySelect(patch.id, i, data.berries && data.berries[i] ? data.berries[i] : {});
-            }
+    // Add a click event listener to the marker
+    marker.on('click', () => {
+        // Fetch data for the specific patch from the server
+        fetch(`/patch/${patch.id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Log the retrieved data
+                console.log('Data retrieved from server for patch', patch.id, ':', data);
 
-            marker.bindPopup(`
-                <b>${patch.name} ${patch.id}</b>
-                <p>${patch.description}</p>
-                <img src="${patch.img}" alt="${patch.description}" width="288" height="162">
-                <form id="form${patch.id}" class="pinPopUp">
-                    ${berrySelects}
-                </form>
-            `);
-        });
+                // Initialize the HTML string for the berry selects
+                let berrySelects = '';
+                // Loop through the number of patches to create selects for each one
+                for (let i = 0; i < patch.numPatches; i++) {
+                    // Determine if there is a selected berry for the current patch index
+                    let selectedBerry = (data.berries && data.berries[i]) ? data.berries[i] : {};
+                    // Add the HTML for the berry select to the berrySelects string
+                    berrySelects += createBerrySelect(patch.id, i, selectedBerry);
+                }
+
+                // Bind the constructed popup HTML to the marker and open it immediately
+                marker.bindPopup(`
+                    <b>${patch.name} ${patch.id}</b>
+                    <p>${patch.description}</p>
+                    <img src="${patch.img}" alt="${patch.description}" width="288" height="162">
+                    <form id="form${patch.id}" class="pinPopUp">
+                        ${berrySelects}
+                    </form>
+                `).openPopup(); // Automatically open popup to see changes
+            })
+            .catch(error => {
+                console.error('Error updating marker popup:', error);
+            });
+    });
 }
 
 // Define a custom icon
