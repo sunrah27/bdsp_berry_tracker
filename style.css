@@ -1,0 +1,34 @@
+#map {
+    height: 734px;
+    width: 1268px;
+    position: absolute;
+}
+
+p {
+    margin: 5px;
+}
+
+.leaflet-popup-content img {
+    width: 300px;
+}
+
+.dropdown-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+    gap: 5px; /* Adjust as needed for spacing between items */
+}
+
+.dropdown-container select {
+    height: 69.9px;
+    width: 69.9px;
+    background-color: rgb(43, 22, 2);
+    color: bisque;
+    text-align: center;
+    border: none;
+    box-sizing: border-box;
+    margin: 5px 0;
+}
+
+.dropdown-container select option {
+    white-space: normal;
+}
