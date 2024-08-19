@@ -9,8 +9,8 @@ async function loadJSONFiles() {
     try {
         // Fetch data for berry and patches
         const [res1, res2] = await Promise.all([
-            fetch(`/data/berry.json`),
-            fetch(`/data/patches.json`)
+            fetch(`./data/berry.json`),
+            fetch(`./data/patches.json`)
         ]);
 
         berryOptions = await res1.json();
@@ -37,7 +37,7 @@ function initiliseMap() {
 
     // Load the map image
     const bounds = [[0, 0], [734, 1268]]; // Adjust based on your map image dimensions
-    const image = L.imageOverlay('img/map.png', bounds).addTo(map);
+    const image = L.imageOverlay('./img/map.png', bounds).addTo(map);
 
     // Set max bounds to prevent dragging beyond the image
     map.setMaxBounds(bounds);
@@ -58,7 +58,7 @@ function initiliseMap() {
 
     // Define a custom icon
     const customIcon = L.icon({
-        iconUrl: 'img/berryIcon_34x34.png', // Path to your custom icon image
+        iconUrl: './img/berryIcon_34x34.png', // Path to your custom icon image
         iconSize: [24, 24], // Size of the icon
         iconAnchor: [12, 24], // Point of the icon which will correspond to marker's location
         popupAnchor: [0, -24] // Point from which the popup should open relative to the iconAnchor
@@ -77,7 +77,7 @@ function updateMarkerPopup(marker, patch) {
     let popupContent = `
         <b>${patch.name}</b>
         <p>${patch.description}</p>
-        <img src="img/${patch.img}" alt="${patch.description}"><br>
+        <img src="./img/${patch.img}" alt="${patch.description}"><br>
         <div id="dropdown-container-${patch.id}" class="dropdown-container"></div>`; // Container for dropdowns
 
     marker.bindPopup(popupContent);
