@@ -75,10 +75,10 @@ function initiliseMap() {
 function updateMarkerPopup(marker, patch) {
     // Define initial popup content with a container for multiple dropdowns
     let popupContent = `
-        <b>${patch.name}</b>
+        <b>${patch.id} ${patch.name}</b>
         <p>${patch.description}</p>
-        <img src="./img/${patch.img}" alt="${patch.description}"><br>
-        <div id="dropdown-container-${patch.id}" class="dropdown-container"></div>`; // Container for dropdowns
+        <img src="./img/${patch.img}"><br>
+        <div id="dropdown-container-${patch.id}" class="dropdown-container"></div>`;
 
     marker.bindPopup(popupContent);
 
@@ -90,7 +90,7 @@ function updateMarkerPopup(marker, patch) {
             // Create and populate dropdowns based on numPatches
             for (let i = 0; i < patch.numPatches; i++) {
                 const dropdown = document.createElement('select');
-                dropdown.id = `${patch.id}-${(i + 1)}`; // Unique ID for each dropdown
+                dropdown.id = `${patch.id}-${(i + 1)}`; // Unique ID for each dropdown/berry patch
 
                 // Populate dropdown with berry options
                 berryOptions.forEach(berry => {
@@ -100,11 +100,10 @@ function updateMarkerPopup(marker, patch) {
                     dropdown.add(option);
                 });
 
-                container.appendChild(dropdown); // Append dropdown to container
+                container.appendChild(dropdown);
 
                 // Load and set saved value and timestamp for dropdown
                 const savedData = localStorage.getItem(`${patch.id}-${(i + 1)}`);
-                
                 if (savedData) {
                     const data = JSON.parse(savedData);
                     dropdown.value = data.value || "0"; // Set to "None" if no value is saved
@@ -112,16 +111,16 @@ function updateMarkerPopup(marker, patch) {
                     dropdown.value = "0"; // Ensure "None" is selected by default
                 }
 
-                // Add change event listener to each dropdown
-                dropdown.addEventListener('change', function(event) {
-                    const selectedBerryId = parseInt(event.target.value);
+                // Add event listener to each dropdown
+                dropdown.addEventListener('change', function(e) {
+                    const selectedBerryId = parseInt(e.target.value);
                     const selectedBerry = berryOptions.find(b => b.id === selectedBerryId);
 
                     const timestamp = Date.now();
                     const formattedTime = new Date(timestamp).toLocaleString();
 
                     if (selectedBerry) {
-                        console.info(`${i + 1}: ${selectedBerry.name} at ${formattedTime}`);
+                        console.info(`${patch.id}-${i + 1}: ${selectedBerry.name} at ${formattedTime}`);
                     }
                     
                     // Save the selected value and timestamp to localStorage as a single JSON object
