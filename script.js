@@ -12,11 +12,9 @@ async function loadJSONFiles() {
             fetch(`./data/berry.json`),
             fetch(`./data/patches.json`)
         ]);
-
+        
         berryOptions = await res1.json();
         berryPatches  = await res2.json();
-
-        console.info("data loaded");
 
         initiliseMap();
     } catch (e) {
@@ -119,9 +117,9 @@ function updateMarkerPopup(marker, patch) {
                     const timestamp = Date.now();
                     const formattedTime = new Date(timestamp).toLocaleString();
 
-                    if (selectedBerry) {
-                        console.info(`${patch.id}-${i + 1}: ${selectedBerry.name} at ${formattedTime}`);
-                    }
+                    // if (selectedBerry) {
+                    //     console.info(`${patch.id}-${i + 1}: ${selectedBerry.name} at ${formattedTime}`);
+                    // }
                     
                     // Save the selected value and timestamp to localStorage as a single JSON object
                     const data = {
