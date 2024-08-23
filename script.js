@@ -54,19 +54,50 @@ function initiliseMap() {
         }
     });
 
-    // Define a custom icon
-    const customIcon = L.icon({
-        iconUrl: './img/berryIcon_34x34.png', // Path to your custom icon image
-        iconSize: [24, 24], // Size of the icon
-        iconAnchor: [12, 24], // Point of the icon which will correspond to marker's location
-        popupAnchor: [0, -24] // Point from which the popup should open relative to the iconAnchor
-    });
-
     // Add markers to the map
     berryPatches.forEach(function (patch) {
+
+        // Determine the icon based on the patch state
+        const { iconUrl, iconClass } = getPatchIcon(patch);
+
+        const customIcon = L.divIcon({
+            html: `<img src="${iconUrl}" class="${iconClass}">`,
+            iconSize: [24, 24], // Size of the icon
+            iconAnchor: [12, 24], // Point of the icon which will correspond to marker's location
+            popupAnchor: [0, -24] // Point from which the popup should open relative to the iconAnchor
+        });
+
         const marker = L.marker(patch.coords, { icon: customIcon }).addTo(map);
         updateMarkerPopup(marker, patch);
     });
+}
+
+function getPatchIcon(patch) {
+    let isEmpty = true;
+    let isReadyToHarvest = false;
+    
+    for (let i = 0; i < patch.numPatches; i++) {
+        const savedData = localStorage.getItem(`${patch.id}-${(i + 1)}`);
+        
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            isEmpty = false;
+            const growthTime = berryOptions.find(berry => berry.id === data.value)?.growth || 0;
+            const readyTime = data.timestamp + (growthTime * 60 * 60 * 1000); // Convert hours to milliseconds
+
+            if (Date.now() > readyTime) {
+                isReadyToHarvest = true;
+            }
+        }
+    }
+
+    if (isEmpty) {
+        return { iconUrl: './img/berry_empty_128x128.png', iconClass: '' };
+    } else if (isReadyToHarvest) {
+        return { iconUrl: './img/berry_planted_128x128.png', iconClass: '' };
+    } else {
+        return { iconUrl: './img/berry_harvest_128x128.png', iconClass: 'shake' };
+    }
 }
 
 // Update the marker popup with the list of berries
