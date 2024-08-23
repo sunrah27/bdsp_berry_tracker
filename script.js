@@ -56,20 +56,38 @@ function initiliseMap() {
 
     // Add markers to the map
     berryPatches.forEach(function (patch) {
-
-        // Determine the icon based on the patch state
-        const { iconUrl, iconClass } = getPatchIcon(patch);
-
-        const customIcon = L.divIcon({
-            html: `<img src="${iconUrl}" class="${iconClass}">`,
-            iconSize: [24, 24], // Size of the icon
-            iconAnchor: [12, 24], // Point of the icon which will correspond to marker's location
-            popupAnchor: [0, -24] // Point from which the popup should open relative to the iconAnchor
-        });
-
-        const marker = L.marker(patch.coords, { icon: customIcon }).addTo(map);
-        updateMarkerPopup(marker, patch);
+        addMarker(map, patch);
     });
+}
+
+function addMarker(map, patch) {
+    // Determine the icon based on the patch state
+    const { iconUrl, iconClass } = getPatchIcon(patch);
+
+    const customIcon = L.divIcon({
+        html: `<img src="${iconUrl}" class="${iconClass}">`,
+        iconSize: [24, 24], // Size of the icon
+        iconAnchor: [12, 24], // Point of the icon which will correspond to marker's location
+        popupAnchor: [0, -24] // Point from which the popup should open relative to the iconAnchor
+    });
+
+    const marker = L.marker(patch.coords, { icon: customIcon }).addTo(map);
+    updateMarkerPopup(marker, patch, map);
+}
+
+function updateMarkerIcon(marker, patch) {
+    // Get the updated icon based on the patch state
+    const { iconUrl, iconClass } = getPatchIcon(patch);
+
+    // Update the marker icon
+    const updatedIcon = L.divIcon({
+        html: `<img src="${iconUrl}" class="${iconClass}">`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 24],
+        popupAnchor: [0, -24]
+    });
+
+    marker.setIcon(updatedIcon);
 }
 
 function getPatchIcon(patch) {
@@ -94,14 +112,14 @@ function getPatchIcon(patch) {
     if (isEmpty) {
         return { iconUrl: './img/berry_empty_128x128.png', iconClass: '' };
     } else if (isReadyToHarvest) {
-        return { iconUrl: './img/berry_planted_128x128.png', iconClass: '' };
-    } else {
         return { iconUrl: './img/berry_harvest_128x128.png', iconClass: 'shake' };
+    } else {
+        return { iconUrl: './img/berry_planted_128x128.png', iconClass: '' };
     }
 }
 
 // Update the marker popup with the list of berries
-function updateMarkerPopup(marker, patch) {
+function updateMarkerPopup(marker, patch, map) {
     // Define initial popup content with a container for multiple dropdowns
     let popupContent = `
         <b>${patch.id} ${patch.name}</b>
@@ -148,10 +166,6 @@ function updateMarkerPopup(marker, patch) {
                     const timestamp = Date.now();
                     const formattedTime = new Date(timestamp).toLocaleString();
 
-                    // if (selectedBerry) {
-                    //     console.info(`${patch.id}-${i + 1}: ${selectedBerry.name} at ${formattedTime}`);
-                    // }
-                    
                     // Save the selected value and timestamp to localStorage as a single JSON object
                     const data = {
                         value: selectedBerryId,
@@ -163,6 +177,9 @@ function updateMarkerPopup(marker, patch) {
                     } else {
                         localStorage.removeItem(`${patch.id}-${(i + 1)}`);
                     }
+
+                    // Update the marker icon immediately after planting or removing a berry
+                    updateMarkerIcon(marker, patch);
                 });
             }
         } else {
