@@ -29,6 +29,7 @@ function updatePatchTable() {
 
         // Add berry names row
         const berryNamesRow = document.createElement('div');
+        const img = document.createElement('img');
         berryNamesRow.classList.add('grid-row');
 
         for (let i = 0; i < patch.numPatches; i++) {
@@ -39,14 +40,15 @@ function updatePatchTable() {
             if (savedData) {
                 const data = JSON.parse(savedData);
                 const berry = berryOptions.find(b => b.id === data.value);
-                
-                // Display berry name or "Empty"
-                berryCell.innerHTML = berry ? berry.name : 'Empty';
-            } else {
-                // If no data, mark as empty
-                berryCell.innerHTML = 'Empty';
-            }
 
+                // Display berry name or "Empty"
+                img.src = berry ? `./img/${data.value}.png`: ``;
+                berryCell.appendChild(img);
+                berryCell.innerHTML += berry ? berry.name : '----';
+            } else {
+                // If no data, mark as Empty
+                berryCell.innerHTML = '----';
+            }
             berryNamesRow.appendChild(berryCell);
         }
         container.appendChild(berryNamesRow);
