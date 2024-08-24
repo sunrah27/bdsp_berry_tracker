@@ -11,11 +11,11 @@ Simple Berry Tracker for Pokemon BDSP. Currently, it tracks where you plant your
 - [x] Added different icons for empty, planted, and harvest-ready patches
 - [x] Added a slight animation to icons when the berry is ready for harvest
 - [x] Change berry icons on the map
+- [x] Add remaining growth time
+- [x] Add a list of all planted berries
 
 ## Stuff still to be finished
 - [ ] Add screenshots for all berry patches
 
 ## Future additions
-- [ ] Add remaining growth time
 - [ ] Replace dropdown with images of berries
-- [ ] Add a list of all planted berries
