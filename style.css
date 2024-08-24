@@ -1,7 +1,41 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#container {
+    padding: 10px;
+}
+
+#container h1 {
+    text-align: center;
+    padding: 20px 0;
+}
+
+#container2 {
+    display: flex;
+    padding: 10px; 
+}
+
+#wrapper {
+    flex: 0;
+}
+
+#list-wrapper {
+    flex: 1;
+    min-width: 0;
+    overflow: auto;
+    margin-left: 10px;
+}
+
 #map {
     height: 734px;
     width: 1268px;
-    position: absolute;
+    position: relative;
 }
 
 .leaflet-div-icon {
@@ -54,4 +88,47 @@ p {
 
 .dropdown-container select option {
     white-space: normal;
+}
+
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+
+.grid-container {
+    display: grid;
+}
+
+.grid-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+    max-width: 500px;
+}
+
+.grid-row:nth-child(3n) {
+    margin-bottom: 10px;
+}
+
+.grid-item {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    background-color: #fff;
+}
+
+.header {
+    background-color: #d2d2d2;
+    font-weight: bold;
+    text-align: left;
+}
+
+@media (max-width: 1619px) {
+    #container2 {
+        flex-direction: column;
+    }
+
+    #list-wrapper {
+        margin: 0px;
+        padding-top: 10px;
+    }
 }
